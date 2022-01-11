@@ -8,6 +8,7 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.OwnerDTO;
+import errorhandling.API_Exception;
 import facades.OwnerFacade;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -16,6 +17,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import utils.EMF_Creator;
 
 /**
@@ -40,16 +42,9 @@ public class OwnerResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("show")
-    public String showOwners() {
-
-        EntityManager em = EMF.createEntityManager();
-        try {
-            List<OwnerDTO> odto = FACADE.getAllOwners();
-            return GSON.toJson(odto);
-            
-        } finally {
-            em.close();
-        }
+    public Response showOwners() throws API_Exception {
+        List<OwnerDTO> ownerDTOs = OwnerDTO.getDTOs(FACADE.getAllOwnersFromEntity());
+        return Response.ok().entity(GSON.toJson(ownerDTOs)).build();
     }
     
 }
